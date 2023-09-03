@@ -7,7 +7,11 @@
 	</head>
 
 <body>
-
+<?php
+session_start();
+$_SESSION['token'] = bin2hex(random_bytes(32));
+$_SESSION['token-expire'] = time() + 3600; //expire after an hour
+?>
     <div class="nk-app-root">
         <!-- main @s -->
         <div class="nk-main ">
@@ -33,6 +37,7 @@
 											</div>
                                             <div class="card-inner">
 												<form method="post" id="user_form" enctype="multipart/form-data">
+                                                    <input type="hidden" name="token" id="token" value="<?=$_SESSION['token'];?>">
                                                 <div class="preview-block">
                                                     <div class="row gy-4">
                                                         <div class="col-sm-4">
@@ -100,6 +105,7 @@
                 e.preventDefault();
                 var image = $('input[name="image"]').get(0).files[0];
                 var formData = new FormData();
+                formData.append('token', $('#token').val());
                 formData.append('image', image);
                 formData.append('first_name', $('#first_name').val());
                 formData.append('last_name', $('#last_name').val());

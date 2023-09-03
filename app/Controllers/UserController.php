@@ -25,6 +25,8 @@ class UserController
 
     function saveUser()
     {
+        session_start();
+
         $file 			= $_FILES['image'];
         $name 			= $file['name'];
         $type 			= $file['type'];
@@ -38,6 +40,18 @@ class UserController
 
         // Allowed mime types 
         $excelMimes = array('image/jpg', 'image/jpeg', 'image/png'); 
+
+        if(!isset($_POST['token']) || !isset($_SESSION['token']) || $_SESSION['token'] != $_POST['token']) {
+            $status = "error";
+            echo json_encode(['status' => 'error', 'message' => 'Invalid token.']);
+            exit;
+        }
+
+        if($_SESSION['token-expire'] < time()) {
+            $status = "error";
+            echo json_encode(['status' => 'error', 'message' => 'Token expired.']);
+            exit;
+        }
 
         // Validate whether selected file is an image 
         if(empty($_POST['first_name']) || empty($_POST['last_name']) || empty($name) ){ 
